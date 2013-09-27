@@ -171,23 +171,28 @@ public class HTTPWebGISFileDownload extends HttpServlet {
 
 				long nanoTime = System.nanoTime();
 
-				String fileName = "context" + nanoTime + ".map";
+				String fileName = null;
+				
+				fileName = "context" + nanoTime + ".map";
 
 				IOUtil.stream2localfile(is, fileName, tempDir);
 
 				response.setContentType("text/plain");
 				response.setContentType("application/force-download");
-				response.setHeader("Content-Disposition",
-						"attachment; filename=" + fileName);
+				if (request.getQueryString() == null || (request.getQueryString() != null && !request.getQueryString().contains("filename")))
+					response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+				else {
+					int fileNameIndex = request.getQueryString().indexOf("filename") + "filename=".length();
+					String reqfilename = request.getQueryString().substring(fileNameIndex);
+					       reqfilename = reqfilename.substring(0, reqfilename.indexOf('&') > 0 ? reqfilename.indexOf('&') : reqfilename.length());
+					response.setHeader("Content-Disposition", "attachment; filename=" + reqfilename);
+				}
 
 				out = response.getWriter();
 				out.print(fileName);
 			} else {
 				if (tempDir != null) {
-					if (!tempDir.mkdir())
-						throw new IOException(
-								"Unable to create temporary directory "
-										+ tempDir);
+					if (!tempDir.mkdir()) throw new IOException("Unable to create temporary directory " + tempDir);
 				}
 			}
 		} catch (IOException e) {
