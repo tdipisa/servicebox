@@ -25,7 +25,8 @@ import net.sf.json.JSONSerializer;
  */
 public class ZipDownloader extends HttpServlet {
 
-    private final static Logger LOGGER = Logger.getLogger(FileDownloader.class.getSimpleName());
+	private static final long serialVersionUID = -1345715662499033375L;
+	private final static Logger LOGGER = Logger.getLogger(FileDownloader.class.getSimpleName());
     private Properties properties = new Properties();
     private String tempDirectory;
     private final static String PROPERTY_FILE_PARAM = "app.properties";
@@ -180,7 +181,7 @@ public class ZipDownloader extends HttpServlet {
             // { files:[ { filename:String, path:String } ] }
             out = new ZipOutputStream(new FileOutputStream(new File(tempDirectory + File.separator + uuid)));
             JSONArray files = requestObj.getJSONArray("files");
-            Iterator iterator = files.iterator();
+            Iterator<JSONObject> iterator = files.iterator();
             while (iterator.hasNext()) {
                 JSONObject file = (JSONObject) iterator.next();
                 String filename = file.getString("filename");
